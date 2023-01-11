@@ -1,23 +1,27 @@
 from flask import Flask, jsonify, request
 from utils.client import send_query
-from utils.storage import get_client
+from utils.storage import get_user_col
 import pdb
 app = Flask(__name__)
 
 @app.route('/api/check_user', methods=['POST'])
-def get_username():
+def check_cred():
   print(request)
 
   if request.method == 'POST':
     print("goes here")
     data = request.get_json()
-    print(request)
-    print(data["userName"])
-    print(data["password"])
-    
-    res = {'received_data': data["userName"]}
-    print(res)
-    return jsonify(received_data= data["userName"])
+    query = {
+      "username" : data["userName"],
+      "password" : data["password"]
+    }
+    collection = get_user_col()
+    doc = collection.find(query)
+    if(len(list(doc)) == 1):
+      return jsonify({"valid":True})
+    else:
+      return jsonify({"valid":False})
+
 
 
 
@@ -42,5 +46,5 @@ def get_data():
     return jsonify({'received_data': 'Hello from the backend!'}), 200
 
 if __name__ == '__main__':
-  app.config['DEBUG'] = True
+  
   app.run(debug=True, host='0.0.0.0')

@@ -21,27 +21,18 @@ function Login(){
         method: 'POST',
         
         headers: { 'Content-Type': 'application/json','Accept':'application/json', 'Access-Control-Allow-Origin':'*' },
-        body: res}).then(response => response.json()).then(data2=>{
-        setData(data2);
-        console.log(data2)
+        body: res}).then(response => response.json()).then(data_retrived=>{
+        console.log(data_retrived["valid"] )
+        if(data_retrived["valid"] === true){
+          console.log("valid user")
+          navigate("/test");
+        }
   
       })
       ;
       
     }
-    // useEffect(()=>{
-    //   fetch("/api/check_user",{
-    //     method: "GET",
-    //     mode: 'no-cors',}).then(response => response.json().then(data2=>{
-    //     console.log("hi")
-    //     console.log(data2)
-    //     setData(data2);
-  
-    //     console.log(data)
-    //   })
-    //     );
-    // },[]
-    // )
+    
     return (
             
         <div>
