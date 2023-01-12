@@ -2,7 +2,7 @@ import pymongo
 
 # singleton value
 def get_url():
-  url = "mongodb://bangghim1.duckdns.org:27019"
+  url = "mongodb+srv://minh7a6:azPuN2ioT8qEaxC3@cluster0.sqzgjxp.mongodb.net/?retryWrites=true&w=majority"
   return url
 
 def get_client():
