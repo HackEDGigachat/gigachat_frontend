@@ -92,3 +92,6 @@
   border-color: black;
 
 }
+#failed_login{
+  color: red;
+}

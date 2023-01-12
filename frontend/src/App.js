@@ -2,8 +2,8 @@ import logo from './logo.svg';
 import './App.css';
 // import { LoginForm } from './components/loginForm'
 import React, { Component, useEffect,useState } from 'react';
-import Test from "./pages/test.js"
-import Login from "./pages/login.js"
+import Main from "./components/main.js"
+import Login from "./components/login.js"
 import { BrowserRouter as Router, Route, Routes , Link} from "react-router-dom"
 
 function App() {
@@ -32,7 +32,7 @@ function App() {
         <Router>
           <Routes>
             <Route path = "/" element = {<Login />}/>
-            <Route path = "/test" element = {<Test data={data} />}/>
+            <Route path = "/main" element = {<Main data={data} />}/>
           </Routes>
         </Router>
         </div>

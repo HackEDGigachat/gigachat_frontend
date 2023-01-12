@@ -2,11 +2,13 @@ import { Link,useNavigate } from "react-router-dom";
 import React, { Component,useState,useEffect } from 'react';
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
+import '../App.css';
 function Login(){
     const navigate= useNavigate();
     const [userName, setuserName] = useState("");
     const [password, setPassword] = useState("");
     const [data, setData] = useState([]);
+    const [login_pass,setLogin] = useState(false)
     function handleSubmit(event) {
       console.log(userName);
       console.log(password);
@@ -25,7 +27,10 @@ function Login(){
         console.log(data_retrived["valid"] )
         if(data_retrived["valid"] === true){
           console.log("valid user")
-          navigate("/test");
+          setLogin(false)
+          navigate("/main");
+        }else{
+          setLogin(true)
         }
   
       })
@@ -59,6 +64,8 @@ function Login(){
           Submit
         </Button>
       </Form>
+      {login_pass}
+      {login_pass ? <div id = "failed_login">Wrong Username or password</div>:null}
 
       </div>
 )

@@ -1,3 +1,4 @@
-from flask import Flask
-app = Flask(__name__)
-app.run(debug=True, host='0.0.0.0')
+from app import run_server
+from flask import Flask, jsonify, request
+
+run_server()
