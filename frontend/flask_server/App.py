@@ -14,7 +14,7 @@ def get_history():
     username = data["username"]
     user_msg_col = get_user_col()
     gpt_msg_col = get_msg_col()
-    print()
+    return jsonify({"test":"test"})
     
 @app.route('/api/check_user', methods=['POST'])
 def check_cred():
