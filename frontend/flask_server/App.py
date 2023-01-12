@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 from utils.client import send_query
 from utils.storage import get_user_col , get_gpt_msg_col,get_msg_col
 import pdb
@@ -15,7 +15,7 @@ def get_history():
     user_msg_col = get_user_col()
     gpt_msg_col = get_msg_col()
     print()
-    
+
 @app.route('/api/check_user', methods=['POST'])
 def check_cred():
   print(request)
@@ -56,6 +56,9 @@ def get_data():
   elif request.method == 'GET':
     return jsonify({'received_data': 'Hello from the backend!'}), 200
 
+@app.route('/video')
+def send_video():
+    return send_file('resources/login_video.mp4', mimetype='video/mp4')
 
 def main():
   app.run(debug=True, host='0.0.0.0')
