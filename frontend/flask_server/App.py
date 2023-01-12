@@ -1,9 +1,17 @@
 from flask import Flask, jsonify, request, send_file
-from utils.client import send_query
-from utils.storage import get_user_col , get_gpt_msg_col,get_msg_col
+from client import send_query
+from storage import get_user_col , get_gpt_msg_col,get_msg_col
 import pdb
+import json
+from query import main_query
 app = Flask(__name__)
 gpt_count = 0
+def updateDictionary(user,collection_msg):
+  for message in collection_msg:
+    message["from"] = user
+    del message['_id']
+  return collection_msg
+
 @app.route('/api/get_history', methods=['POST'])
 def get_history():
   print(request)
@@ -17,11 +25,11 @@ def get_history():
     }
     user_msg_col = list(get_msg_col().find(query))
     gpt_msg_col = list(get_gpt_msg_col().find(query))
-    user_msg_col = [dict(item,**{'from':'user'}) for item in user_msg_col]
-    gpt_msg_col = [dict(item,**{'from':'gpt'}) for item in gpt_msg_col]
+    user_msg_col = updateDictionary("user",user_msg_col)
+    gpt_msg_col = updateDictionary("gpt",gpt_msg_col)
     combined_msgs = gpt_msg_col+user_msg_col
     sorted_msgs = sorted(combined_msgs,key=lambda d:d['timestamp'])
-    return jsonify({"sorted_msgs":sorted_msgs})
+    return jsonify({"sorted_msgs":json.loads(json.dumps(sorted_msgs))})
     
 @app.route('/api/check_user', methods=['POST'])
 def check_cred():
@@ -50,7 +58,12 @@ def reply():
     data = request.get_json()
     print(data)
     query=data["message"]
-    answer = send_query(query)
+    username = "rpi_user"
+    doc ={
+      "username" :username,
+      "text" : query
+    }
+    answer = main_query(doc)["text"]
     return jsonify({'reply': answer}), 200
     
 
@@ -71,5 +84,7 @@ def send_video():
 def main():
   app.run(debug=True, host='0.0.0.0')
 
+
 if __name__ == "__main__":
+  print("hello")
   main()

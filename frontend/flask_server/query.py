@@ -1,11 +1,11 @@
 import openai
 import pymongo
-import storage as storage
+import storage
 import time
 import os
 from serpapi import GoogleSearch
 
-openai.api_key = "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"
+openai.api_key = "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"
 # query the db for any new request 
 # if yes
 # send it to gpt
@@ -56,26 +56,19 @@ def check_google_search(text):
       return None
   else:
     return None
-def main():
+def main_query(doc): #doc is dictionary with user and name
   user_msg_col = storage.get_msg_col()
   gpt_msg_col = storage.get_gpt_msg_col()
   cur_cnt = user_msg_col.count_documents({})
-  while True:
-    new_cnt = user_msg_col.count_documents({})
-    if new_cnt > cur_cnt:
-      diff = new_cnt - cur_cnt
-      # print(f"Documents Received: {diff}")
-      documents = user_msg_col.find({}, sort=[( 'timestamp', pymongo.DESCENDING )] ).limit(diff)
-      for doc in documents:
-        response = check_google_search(doc["text"])
-        if(response == None):
-          response = openai.Completion.create(model="text-davinci-001", prompt=doc["text"], temperature=0, max_tokens=50)
-          resp_msg = storage.Message(doc["username"], int(time.time()), response["choices"][0]["text"])
-        else:
-          resp_msg = storage.Message(doc["username"], int(time.time()), response)
-        # print(resp_msg.text)
-        gpt_msg_col.insert_one(resp_msg.get_document())
-      cur_cnt = new_cnt
+  response = check_google_search(doc["text"])
+  if(response == None):
+    response = openai.Completion.create(model="text-davinci-001", prompt=doc["text"], temperature=0, max_tokens=50)
+    resp_msg = storage.Message(doc["username"], int(time.time()), response["choices"][0]["text"])
+  else:
+    resp_msg = storage.Message(doc["username"], int(time.time()), response)
+  # print(resp_msg.text)
+  gpt_msg_col.insert_one(resp_msg.get_document())
+  return resp_msg.get_document()
 
 if __name__ == "__main__":
-  main()
+  main_query()

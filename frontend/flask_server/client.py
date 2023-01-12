@@ -1,4 +1,4 @@
-import utils.storage as storage
+import storage
 import time
 import sys
 import pymongo
