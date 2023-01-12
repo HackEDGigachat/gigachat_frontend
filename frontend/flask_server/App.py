@@ -1,9 +1,21 @@
 from flask import Flask, jsonify, request
 from utils.client import send_query
-from utils.storage import get_user_col , get_gpt_msg_col
+from utils.storage import get_user_col , get_gpt_msg_col,get_msg_col
 import pdb
 app = Flask(__name__)
 gpt_count = 0
+@app.route('/api/get_history', methods=['POST'])
+def get_history():
+  print(request)
+
+  if request.method == 'POST':
+    print("goes here")
+    data = request.get_json()
+    username = data["username"]
+    user_msg_col = get_user_col()
+    gpt_msg_col = get_msg_col()
+    print()
+    
 @app.route('/api/check_user', methods=['POST'])
 def check_cred():
   print(request)
@@ -43,12 +55,9 @@ def get_data():
     return jsonify({'received_data': data}), 200
   elif request.method == 'GET':
     return jsonify({'received_data': 'Hello from the backend!'}), 200
-def get_count(): 
-  gpt_col = get_gpt_msg_col()
-  gpt_count = gpt_col.count_documents({})
+
 
 def main():
-  get_count()
   app.run(debug=True, host='0.0.0.0')
 
 if __name__ == "__main__":

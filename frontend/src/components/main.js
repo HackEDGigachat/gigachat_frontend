@@ -104,13 +104,27 @@ import { useState, useEffect,useRef } from 'react';
 //     }
 // }
 
-function Main() {
+function Main(test) {
   const [data, setData] = useState([]);
   const [message, setMessage] = useState("");
   const inputRef = useRef(null);
   const [reply,setReply] = useState("");
   const [updated, setUpdated] = useState('');
+  useEffect(()=>{
+    fetch("/api/get_history",{
+      method: "POST",
+      headers: { 'Content-Type': 'application/json','Accept':'application/json', 'Access-Control-Allow-Origin':'*' },
 
+      }).then(response => response.json().then(data2=>{
+      console.log("hi")
+      console.log(data2)
+      setData(data2);
+
+      console.log(data)
+    })
+      );
+  },[]
+  )
 
 
 

@@ -13,7 +13,7 @@ function App() {
   useEffect(()=>{
     fetch("/api/data",{
       method: "GET",
-      mode: 'no-cors',}).then(response => response.json().then(data2=>{
+      }).then(response => response.json().then(data2=>{
       console.log("hi")
       console.log(data2)
       setData(data2);

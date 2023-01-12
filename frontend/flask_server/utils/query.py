@@ -1,11 +1,11 @@
 import openai
 import pymongo
-import storage
+import storage as storage
 import time
 import os
 from serpapi import GoogleSearch
 
-openai.api_key = os.getenv("API_KEY")
+openai.api_key = "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"
 # query the db for any new request 
 # if yes
 # send it to gpt
