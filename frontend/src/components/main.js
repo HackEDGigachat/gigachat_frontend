@@ -104,68 +104,79 @@ import { useState, useEffect,useRef } from 'react';
 //     }
 // }
 
-function Main(test) {
-  const [data, setData] = useState([]);
-  const [message, setMessage] = useState("");
-  const inputRef = useRef(null);
-  const [reply,setReply] = useState("");
-  const [updated, setUpdated] = useState('');
-  useEffect(()=>{
-    fetch("/api/get_history",{
-      method: "POST",
-      headers: { 'Content-Type': 'application/json','Accept':'application/json', 'Access-Control-Allow-Origin':'*' },
+class Main extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: [],
+      message: "",
+      reply: "",
+      updated: ""
+    };
+    this.inputRef = React.createRef();
+  }
 
-      }).then(response => response.json().then(data2=>{
-      console.log("hi")
-      console.log(data2)
-      setData(data2);
-
-      console.log(data)
-    })
-      );
-  },[]
-  )
-
-
-
-
-  function handleClick (event) {
-    // 👇 "inputRef.current.value" is input value
-    setUpdated(inputRef.current.value);
+  componentDidMount() {
     const params = {
-      message:inputRef.current.value,
-    }
+      username: "rpi_user"
+    };
     const res = JSON.stringify(params);
-    fetch("/api/reply",{
-      method: 'POST',
-      
-      headers: { 'Content-Type': 'application/json','Accept':'application/json', 'Access-Control-Allow-Origin':'*' },
-      body: res}).then(response => response.json()).then(data_retrived=>{
-      console.log(data_retrived["reply"] )
-      setReply(data_retrived["reply"])
-
+    fetch("/api/get_history", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*"
+      },
+      body: res
     })
-    
+      .then(response => response.json())
+      .then(data2 => {
+        console.log("hi");
+        console.log(data2);
+        this.setState({ data: data2 });
+        console.log(this.state.data);
+      });
+  }
+
+  handleClick = event => {
+    this.setState({ updated: this.inputRef.current.value });
+    const params = {
+      message: this.inputRef.current.value
+    };
+    const res = JSON.stringify(params);
+    fetch("/api/reply", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*"
+      },
+      body: res
+    })
+      .then(response => response.json())
+      .then(data_retrived => {
+        console.log(data_retrived["reply"]);
+        this.setState({ reply: data_retrived["reply"] });
+      });
   };
-  
 
-  return (
-    <div>
-      <h1>Chat page</h1>
-      <input
-        ref={inputRef}
-        type="text"
-        id="message"
-        name="message"
-      />
-      <div>Your message: {updated}</div>
-      <button onClick={handleClick}>Send</button>
-      <div>chat gpt reply: {reply}</div>
-
-    </div>
-  )
+  render() {
+    return (
+      <div>
+        <h1>Chat page</h1>
+        <input
+          ref={this.inputRef}
+          type="text"
+          id="message"
+          name="message"
+        />
+        <div>Your message: {this.state.updated}</div>
+        <button onClick={this.handleClick}>Send</button>
+        <div>chat gpt reply: {this.state.reply}</div>
+      </div>
+    );
+  }
 }
 
 export default Main;
-
-

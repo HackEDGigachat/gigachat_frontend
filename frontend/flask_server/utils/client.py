@@ -31,4 +31,4 @@ def send_query(request_text):
  
 
 if __name__ == "__main__":
-  print(send_query(sys.argv[1]))
+  print(send_query("what is the weather"))

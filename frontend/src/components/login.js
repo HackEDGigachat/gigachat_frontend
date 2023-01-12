@@ -2,13 +2,18 @@ import { Link,useNavigate } from "react-router-dom";
 import React, { Component,useState,useEffect } from 'react';
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
-import '../App.css';
+import NavBar from './navbar_login.js';
+import './login.css';
+
+
 function Login(){
     const navigate= useNavigate();
     const [userName, setuserName] = useState("");
     const [password, setPassword] = useState("");
     const [data, setData] = useState([]);
     const [login_pass,setLogin] = useState(false)
+   
+
     function handleSubmit(event) {
       console.log(userName);
       console.log(password);
@@ -37,14 +42,28 @@ function Login(){
       ;
       
     }
+
+
+    
     
     return (
             
         <div>
+            
 
+            <div>
+            <NavBar/>
+            </div>
+              <video width='100%' height='100%' controls={false} loop={true}>
+            <source src="http://localhost:5000/video" type="video/mp4"/>
+            </video>
+
+
+
+        <div className = "loginForm">
         <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3" controlId="formBasicuserName">
-          <Form.Label>Username</Form.Label>
+          <Form.Label style={{color:'white'}}>Username</Form.Label>
           <Form.Control type="username" placeholder="Enter userName" value={userName} onChange={(e) => setuserName(e.target.value)}/>
           <Form.Text className="text-muted">
             We'll never share your userName with anyone else.
@@ -52,11 +71,11 @@ function Login(){
         </Form.Group>
   
         <Form.Group className="mb-3" controlId="formBasicPassword">
-          <Form.Label>Password</Form.Label>
+          <Form.Label style={{color:'white'}}>Password</Form.Label>
           <Form.Control type="password" placeholder="Password"  value={password} onChange={(e) => setPassword(e.target.value)}/>
         </Form.Group>
         <Form.Group className="mb-3" controlId="formBasicCheckbox">
-          <Form.Check type="checkbox" label="Check me out" />
+          <Form.Check type="checkbox" label="To be designed" color='white' className='label-color'/>
         </Form.Group>
         <Button variant="primary" type="submit" onClick={()=>{
             // navigate("/test");
@@ -66,7 +85,7 @@ function Login(){
       </Form>
       {login_pass}
       {login_pass ? <div id = "failed_login">Wrong Username or password</div>:null}
-
+      </div>
       </div>
 )
     }
