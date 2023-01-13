@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { Form, Link } from "react-router-dom";
-import '../App.css';
-import Button from 'react-bootstrap/Button';
-import { AiOutlinePlus } from 'react-icons/ai';
+import "../App.css";
+import Button from "react-bootstrap/Button";
+import { AiOutlinePlus } from "react-icons/ai";
 import WindowSize from "./windowSize";
-import { useState, useEffect,useRef } from 'react';
-
+import { useState, useEffect, useRef } from "react";
+import { ChatFeed, Message } from "react-chat-ui";
 // class Test extends Component {
 
 //     constructor(props){
@@ -16,24 +16,20 @@ import { useState, useEffect,useRef } from 'react';
 //     screenWidth: 0,
 //     };
 
-//     chatProperty = { 
-//         float: 'right', 
-//         height: '100%', 
+//     chatProperty = {
+//         float: 'right',
+//         height: '100%',
 //         width: `65%`,
 
 //      };
 
-
-
 //     handleTabs(buttonName) {
-
 
 //         let i, tabcontent, tablinks = 0;
 //         tabcontent = document.getElementsByClassName("tabcontent");
 //         for (i = 0; i < tabcontent.length; i++) {
 //             tabcontent[i].style.display = "none";
 //           }
-
 
 //         tablinks = document.getElementsByClassName("tablinks");
 //         for (i = 0; i < tablinks.length; i++) {
@@ -50,19 +46,12 @@ import { useState, useEffect,useRef } from 'react';
 //         this.setState({ screenHeight, screenWidth });
 //       }
 
-
-
-
-//     render() { 
+//     render() {
 //         // const data = props.data;
-
 
 //         return (
 //             // main parent div
 //             <div style={{ height: '100%' }}>
-
-
-
 
 //                     <div className="Left_panel">
 //                     <React.Fragment>
@@ -75,7 +64,6 @@ import { useState, useEffect,useRef } from 'react';
 
 //                     </React.Fragment>
 //                     </div>
-
 
 //                 <div id="alpha" className="tabcontent" style={this.chatProperty}>
 //                     <h3>Chat session 1</h3>
@@ -93,11 +81,6 @@ import { useState, useEffect,useRef } from 'react';
 //                     <p>Context</p>
 //                 </div>
 
-
-
-
-
-
 //             </div>
 //             //main parent div closing
 //         );
@@ -111,14 +94,15 @@ class Main extends React.Component {
       data: [],
       message: "",
       reply: "",
-      updated: ""
+      updated: "",
+      message_history: [],
     };
     this.inputRef = React.createRef();
   }
 
   componentDidMount() {
     const params = {
-      username: "rpi_user"
+      username: "rpi_user",
     };
     const res = JSON.stringify(params);
     fetch("/api/get_history", {
@@ -126,23 +110,32 @@ class Main extends React.Component {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        "Access-Control-Allow-Origin": "*"
+        "Access-Control-Allow-Origin": "*",
       },
-      body: res
+      body: res,
     })
-      .then(response => response.json())
-      .then(data2 => {
+      .then((response) => response.json())
+      .then((data2) => {
         console.log("hi");
         console.log(data2);
-        this.setState({ data: data2 });
-        console.log(this.state.data);
+        this.setState({ data: data2["sorted_msgs"] });
+        for (let i = 0; i < this.state.data.length; i++) {
+          this.setState(prevState => ({
+            message_history: prevState.message_history.concat(
+              new Message({
+                id: this.state.data[i]["from"],
+                message: this.state.data[i]["text"],
+              }), 
+            )
+        }))
+        }
       });
   }
 
-  handleClick = event => {
+  handleClick = (event) => {
     this.setState({ updated: this.inputRef.current.value });
     const params = {
-      message: this.inputRef.current.value
+      message: this.inputRef.current.value,
     };
     const res = JSON.stringify(params);
     fetch("/api/reply", {
@@ -150,12 +143,12 @@ class Main extends React.Component {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        "Access-Control-Allow-Origin": "*"
+        "Access-Control-Allow-Origin": "*",
       },
-      body: res
+      body: res,
     })
-      .then(response => response.json())
-      .then(data_retrived => {
+      .then((response) => response.json())
+      .then((data_retrived) => {
         console.log(data_retrived["reply"]);
         this.setState({ reply: data_retrived["reply"] });
       });
@@ -165,15 +158,27 @@ class Main extends React.Component {
     return (
       <div>
         <h1>Chat page</h1>
-        <input
-          ref={this.inputRef}
-          type="text"
-          id="message"
-          name="message"
-        />
+        <input ref={this.inputRef} type="text" id="message" name="message" />
         <div>Your message: {this.state.updated}</div>
         <button onClick={this.handleClick}>Send</button>
         <div>chat gpt reply: {this.state.reply}</div>
+        <ChatFeed
+          messages={this.state.message_history} // Array: list of message objects
+          isTyping={this.state.is_typing} // Boolean: is the recipient typing
+          hasInputField={false} // Boolean: use our input, or use your own
+          showSenderName // show the name of the user who sent the message
+          bubblesCentered={false} //Boolean should the bubbles be centered in the feed?
+          // JSON: Custom bubble styles
+          bubbleStyles={{
+            text: {
+              fontSize: 30,
+            },
+            chatbubble: {
+              borderRadius: 70,
+              padding: 40,
+            },
+          }}
+        />
       </div>
     );
   }
