@@ -25,11 +25,11 @@ def get_history():
     }
     user_msg_col = list(get_msg_col().find(query))
     gpt_msg_col = list(get_gpt_msg_col().find(query))
-    user_msg_col = updateDictionary("user",user_msg_col)
-    gpt_msg_col = updateDictionary("gpt",gpt_msg_col)
+    user_msg_col = updateDictionary(0,user_msg_col) #0 = user , 1 = chat
+    gpt_msg_col = updateDictionary(1,gpt_msg_col)
     combined_msgs = gpt_msg_col+user_msg_col
     sorted_msgs = sorted(combined_msgs,key=lambda d:d['timestamp'])
-    return jsonify({"sorted_msgs":json.loads(json.dumps(sorted_msgs))})
+    return jsonify({"sorted_msgs":sorted_msgs})
     
 @app.route('/api/check_user', methods=['POST'])
 def check_cred():

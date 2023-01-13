@@ -59,7 +59,7 @@ def check_google_search(text):
 def main_query(doc): #doc is dictionary with user and name
   user_msg_col = storage.get_msg_col()
   gpt_msg_col = storage.get_gpt_msg_col()
-  cur_cnt = user_msg_col.count_documents({})
+  
   response = check_google_search(doc["text"])
   if(response == None):
     response = openai.Completion.create(model="text-davinci-001", prompt=doc["text"], temperature=0, max_tokens=50)
