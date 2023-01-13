@@ -33,7 +33,7 @@ function Login(){
         if(data_retrived["valid"] === true){
           console.log("valid user")
           setLogin(false)
-          navigate("/main",{'test':"test"});
+          navigate("/main",{'username':userName});
         }else{
           setLogin(true)
         }

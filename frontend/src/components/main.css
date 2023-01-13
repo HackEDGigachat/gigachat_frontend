@@ -1,0 +1,8 @@
+#chat {
+  
+  overflow: hidden;
+}
+#main {
+  height: 100vh;
+  background-color: white;
+}

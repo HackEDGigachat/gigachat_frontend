@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Form, Link } from "react-router-dom";
-import "../App.css";
+import "./main.css";
 import Button from "react-bootstrap/Button";
 import { AiOutlinePlus } from "react-icons/ai";
 import WindowSize from "./windowSize";
@@ -96,13 +96,18 @@ class Main extends React.Component {
       reply: "",
       updated: "",
       message_history: [],
+      loading : false,
+      username :"rpi_user",
     };
     this.inputRef = React.createRef();
   }
 
   componentDidMount() {
+    this.setState({
+      loading:true,
+    })
     const params = {
-      username: "rpi_user",
+      username: this.state.username,
     };
     const res = JSON.stringify(params);
     fetch("/api/get_history", {
@@ -116,69 +121,97 @@ class Main extends React.Component {
     })
       .then((response) => response.json())
       .then((data2) => {
-        console.log("hi");
-        console.log(data2);
         this.setState({ data: data2["sorted_msgs"] });
+        
         for (let i = 0; i < this.state.data.length; i++) {
-          this.setState(prevState => ({
+          this.setState({
+            loading:false,
+          })
+          this.setState((prevState) => ({
+            
             message_history: prevState.message_history.concat(
               new Message({
                 id: this.state.data[i]["from"],
                 message: this.state.data[i]["text"],
-              }), 
-            )
-        }))
+              })
+            ),
+          }));
         }
       });
   }
 
   handleClick = (event) => {
-    this.setState({ updated: this.inputRef.current.value });
-    const params = {
-      message: this.inputRef.current.value,
-    };
-    const res = JSON.stringify(params);
-    fetch("/api/reply", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: res,
-    })
-      .then((response) => response.json())
-      .then((data_retrived) => {
-        console.log(data_retrived["reply"]);
-        this.setState({ reply: data_retrived["reply"] });
-      });
+    this.setState({ updated: this.inputRef.current.value,
+      loading : true,
+    });
+    this.setState(
+      (prevState) => ({
+        message_history: prevState.message_history.concat(
+          new Message({
+            id: 0,
+            message: this.inputRef.current.value,
+          })
+        ),
+      }),
+      () => {
+        const params = {
+          username :this.state.username,
+          message: this.inputRef.current.value,
+        };
+        const res = JSON.stringify(params);
+        this.inputRef.current.value = "";
+        fetch("/api/reply", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+          body: res,
+        })
+          .then((response) => response.json())
+          .then((data_retrived) => {
+            console.log(data_retrived["reply"]);
+            this.setState({ reply: data_retrived["reply"],loading :false });
+            this.setState((prevState) => ({
+              message_history: prevState.message_history.concat(
+                new Message({
+                  id: 1,
+                  message: data_retrived["reply"],
+                })
+              ),
+            }));
+          });
+      }
+    );
   };
 
   render() {
     return (
-      <div>
+      <div id="main">
         <h1>Chat page</h1>
-        <input ref={this.inputRef} type="text" id="message" name="message" />
-        <div>Your message: {this.state.updated}</div>
-        <button onClick={this.handleClick}>Send</button>
-        <div>chat gpt reply: {this.state.reply}</div>
-        <ChatFeed
-          messages={this.state.message_history} // Array: list of message objects
-          isTyping={this.state.is_typing} // Boolean: is the recipient typing
-          hasInputField={false} // Boolean: use our input, or use your own
-          showSenderName // show the name of the user who sent the message
-          bubblesCentered={false} //Boolean should the bubbles be centered in the feed?
-          // JSON: Custom bubble styles
-          bubbleStyles={{
-            text: {
-              fontSize: 30,
-            },
-            chatbubble: {
-              borderRadius: 70,
-              padding: 40,
-            },
-          }}
-        />
+
+        <div id="chat">
+          <ChatFeed
+            messages={this.state.message_history} // Array: list of message objects
+            isTyping={this.state.is_typing} // Boolean: is the recipient typing
+            hasInputField={false} // Boolean: use our input, or use your own
+            showSenderName // show the name of the user who sent the message
+            bubblesCentered={false} //Boolean should the bubbles be centered in the feed?
+            maxHeight={window.innerHeight * 0.75}
+            bubbleStyles={{
+              text: {
+                fontSize: 30,
+              },
+              chatbubble: {
+                borderRadius: 70,
+                padding: 40,
+              },
+            }}
+          />
+          <input ref={this.inputRef} type="text" id="message" name="message" />
+          <button onClick={this.handleClick} disabled={this.state.loading}>Send</button>
+        </div>
       </div>
     );
   }

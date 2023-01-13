@@ -5,7 +5,7 @@ import time
 import os
 from serpapi import GoogleSearch
 
-openai.api_key = "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"
+openai.api_key = "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"
 # query the db for any new request 
 # if yes
 # send it to gpt
@@ -59,7 +59,7 @@ def check_google_search(text):
 def main_query(doc): #doc is dictionary with user and name
   user_msg_col = storage.get_msg_col()
   gpt_msg_col = storage.get_gpt_msg_col()
-  
+  user_msg = storage.Message(doc["username"],int(time.time()),doc["text"])
   response = check_google_search(doc["text"])
   if(response == None):
     response = openai.Completion.create(model="text-davinci-001", prompt=doc["text"], temperature=0, max_tokens=50)
@@ -67,6 +67,8 @@ def main_query(doc): #doc is dictionary with user and name
   else:
     resp_msg = storage.Message(doc["username"], int(time.time()), response)
   # print(resp_msg.text)
+ 
+  user_msg_col.insert_one(user_msg.get_document())
   gpt_msg_col.insert_one(resp_msg.get_document())
   return resp_msg.get_document()
 
