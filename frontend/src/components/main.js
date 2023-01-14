@@ -6,6 +6,7 @@ import { AiOutlinePlus } from "react-icons/ai";
 import WindowSize from "./windowSize";
 import { useState, useEffect, useRef } from "react";
 import { ChatFeed, Message } from "react-chat-ui";
+import { Loading, Progress, SetDefault } from "react-loading-ui";
 // class Test extends Component {
 
 //     constructor(props){
@@ -96,16 +97,20 @@ class Main extends React.Component {
       reply: "",
       updated: "",
       message_history: [],
-      loading : false,
-      username :"rpi_user",
+      loading: false,
+      username: "rpi_user",
+      message_load: 10,
     };
     this.inputRef = React.createRef();
   }
 
   componentDidMount() {
+    Loading({
+      title: "Loading Previous Messages",
+    });
     this.setState({
-      loading:true,
-    })
+      loading: true,
+    });
     const params = {
       username: this.state.username,
     };
@@ -122,13 +127,12 @@ class Main extends React.Component {
       .then((response) => response.json())
       .then((data2) => {
         this.setState({ data: data2["sorted_msgs"] });
-        
+
         for (let i = 0; i < this.state.data.length; i++) {
           this.setState({
-            loading:false,
-          })
+            loading: false,
+          });
           this.setState((prevState) => ({
-            
             message_history: prevState.message_history.concat(
               new Message({
                 id: this.state.data[i]["from"],
@@ -137,13 +141,12 @@ class Main extends React.Component {
             ),
           }));
         }
+        Loading();
       });
   }
 
   handleClick = (event) => {
-    this.setState({ updated: this.inputRef.current.value,
-      loading : true,
-    });
+    this.setState({ updated: this.inputRef.current.value, loading: true });
     this.setState(
       (prevState) => ({
         message_history: prevState.message_history.concat(
@@ -155,7 +158,7 @@ class Main extends React.Component {
       }),
       () => {
         const params = {
-          username :this.state.username,
+          username: this.state.username,
           message: this.inputRef.current.value,
         };
         const res = JSON.stringify(params);
@@ -172,7 +175,7 @@ class Main extends React.Component {
           .then((response) => response.json())
           .then((data_retrived) => {
             console.log(data_retrived["reply"]);
-            this.setState({ reply: data_retrived["reply"],loading :false });
+            this.setState({ reply: data_retrived["reply"], loading: false });
             this.setState((prevState) => ({
               message_history: prevState.message_history.concat(
                 new Message({
@@ -185,15 +188,28 @@ class Main extends React.Component {
       }
     );
   };
+  handleScroll = (e) => {
+    let element = e.target;
+    if (element.scrollHeight - element.scrollTop === element.clientHeight) {
+      // do something at end of scroll
+      console.log("fwafwaf");
+    }
+  };
 
   render() {
     return (
       <div id="main">
         <h1>Chat page</h1>
 
-        <div id="chat">
+        <div id="chat" onScroll={this.handleScroll}>
           <ChatFeed
-            messages={this.state.message_history} // Array: list of message objects
+            onScroll={this.handleScroll}
+            messages={this.state.message_history.slice(
+              Math.max(
+                this.state.message_history.length - this.state.message_load,
+                1
+              )
+            )} // Array: list of message objects
             isTyping={this.state.is_typing} // Boolean: is the recipient typing
             hasInputField={false} // Boolean: use our input, or use your own
             showSenderName // show the name of the user who sent the message
@@ -201,17 +217,28 @@ class Main extends React.Component {
             maxHeight={window.innerHeight * 0.75}
             bubbleStyles={{
               text: {
-                fontSize: 30,
+                fontSize: 16,
               },
               chatbubble: {
                 borderRadius: 70,
-                padding: 40,
+                padding: 20,
               },
             }}
           />
-          <input ref={this.inputRef} type="text" id="message" name="message" />
-          <button onClick={this.handleClick} disabled={this.state.loading}>Send</button>
+          
         </div>
+        <div class="input">
+            <input
+              ref={this.inputRef}
+              type="text"
+              id="message"
+              name="message"
+            />
+
+            <button onClick={this.handleClick} disabled={this.state.loading}>
+              Send
+            </button>
+          </div>
       </div>
     );
   }

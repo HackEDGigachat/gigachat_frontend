@@ -4,5 +4,22 @@
 }
 #main {
   height: 100vh;
+  width: 100%;
   background-color: white;
+  position: relative;
+}
+#message{
+  width:75%;
+  padding-right: 10%;
+}
+.input button {
+  margin-left: 5px;
+}
+.input{
+  margin-left: 1%;
+  position: absolute;
+  flex:1;
+  width: 100%;
+  justify-content: space-between;
+  bottom: 10%;
 }
