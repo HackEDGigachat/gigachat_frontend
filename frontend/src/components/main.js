@@ -7,6 +7,7 @@ import WindowSize from "./windowSize";
 import { useState, useEffect, useRef } from "react";
 import { ChatFeed, Message } from "react-chat-ui";
 import { Loading, Progress, SetDefault } from "react-loading-ui";
+import { useLocation } from 'react-router-dom';
 // class Test extends Component {
 
 //     constructor(props){
@@ -89,7 +90,10 @@ import { Loading, Progress, SetDefault } from "react-loading-ui";
 // }
 
 class Main extends React.Component {
+
   constructor(props) {
+
+
     super(props);
     this.state = {
       data: [],
@@ -99,12 +103,14 @@ class Main extends React.Component {
       message_history: [],
       loading: false,
       username: "rpi_user",
-      message_load: 10,
+  
+      // message_load: 10,
     };
     this.inputRef = React.createRef();
   }
 
   componentDidMount() {
+    
     Loading({
       title: "Loading Previous Messages",
     });
@@ -188,28 +194,27 @@ class Main extends React.Component {
       }
     );
   };
-  handleScroll = (e) => {
-    let element = e.target;
-    if (element.scrollHeight - element.scrollTop === element.clientHeight) {
-      // do something at end of scroll
-      console.log("fwafwaf");
-    }
-  };
+  handleScroll = (event) => {
+    console.log("scroll");
+}
 
   render() {
+    
     return (
+      
       <div id="main">
-        <h1>Chat page</h1>
+        <h1 >Chat page </h1>
 
-        <div id="chat" onScroll={this.handleScroll}>
+        <div id="chat" >
           <ChatFeed
-            onScroll={this.handleScroll}
-            messages={this.state.message_history.slice(
-              Math.max(
-                this.state.message_history.length - this.state.message_load,
-                1
-              )
-            )} // Array: list of message objects
+            onScroll ={this.handleScroll}
+            // messages={this.state.message_history.slice(
+            //   Math.max(
+            //     this.state.message_history.length - this.state.message_load,
+            //     1
+            //   )
+            // )} // Array: list of message objects
+            messages = {this.state.message_history}
             isTyping={this.state.is_typing} // Boolean: is the recipient typing
             hasInputField={false} // Boolean: use our input, or use your own
             showSenderName // show the name of the user who sent the message
@@ -227,7 +232,7 @@ class Main extends React.Component {
           />
           
         </div>
-        <div class="input">
+        <div className="input">
             <input
               ref={this.inputRef}
               type="text"
@@ -235,7 +240,7 @@ class Main extends React.Component {
               name="message"
             />
 
-            <button onClick={this.handleClick} disabled={this.state.loading}>
+            <button id = "send_msg" onClick={this.handleClick} disabled={this.state.loading}>
               Send
             </button>
           </div>

@@ -7,22 +7,7 @@ import Login from "./components/login.js"
 import { BrowserRouter as Router, Route, Routes , Link} from "react-router-dom"
 
 function App() {
-  const [data, setData] = useState([]);
-  const [username, setUsername] = useState("")
-  
-  useEffect(()=>{
-    fetch("/api/data",{
-      method: "GET",
-      }).then(response => response.json().then(data2=>{
-      console.log("hi")
-      console.log(data2)
-      setData(data2);
 
-      console.log(data)
-    })
-      );
-  },[]
-  )
   
   return (
     <>
@@ -32,7 +17,7 @@ function App() {
         <Router>
           <Routes>
             <Route path = "/" element = {<Login />}/>
-            <Route path = "/main" element = {<Main data={data} />}/>
+            <Route path = "/main" element = {<Main />}/>
           </Routes>
         </Router>
         </div>

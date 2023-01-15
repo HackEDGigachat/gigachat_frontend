@@ -1,4 +1,4 @@
-import { Link,useNavigate } from "react-router-dom";
+import { Link,useNavigate  } from "react-router-dom";
 import React, { Component,useState,useEffect } from 'react';
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
@@ -8,7 +8,7 @@ import './login.css';
 
 function Login(){
     const navigate= useNavigate();
-    const [userName, setuserName] = useState("");
+    const [userName, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [data, setData] = useState([]);
     const [login_pass,setLogin] = useState(false)
@@ -33,7 +33,9 @@ function Login(){
         if(data_retrived["valid"] === true){
           console.log("valid user")
           setLogin(false)
-          navigate("/main",{'username':userName});
+          setUsername(userName);
+          
+          navigate("main",{state:{username:userName,}});
         }else{
           setLogin(true)
         }
@@ -47,6 +49,7 @@ function Login(){
     
     
     return (
+     
             
         <div>
             
@@ -64,7 +67,7 @@ function Login(){
         <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3" controlId="formBasicuserName">
           <Form.Label style={{color:'white'}}>Username</Form.Label>
-          <Form.Control type="username" placeholder="Enter userName" value={userName} onChange={(e) => setuserName(e.target.value)}/>
+          <Form.Control type="username" placeholder="Enter userName" value={userName} onChange={(e) => setUsername(e.target.value)}/>
           <Form.Text className="text-muted">
             We'll never share your userName with anyone else.
           </Form.Text>
@@ -87,6 +90,7 @@ function Login(){
       {login_pass ? <div id = "failed_login">Wrong Username or password</div>:null}
       </div>
       </div>
+ 
 )
     }
 
