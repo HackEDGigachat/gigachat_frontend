@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Form, Link } from "react-router-dom";
+import { Form, Link, useParams, useLocation } from "react-router-dom";
 import "./main.css";
 import Button from "react-bootstrap/Button";
 import { AiOutlinePlus } from "react-icons/ai";
@@ -7,118 +7,34 @@ import WindowSize from "./windowSize";
 import { useState, useEffect, useRef } from "react";
 import { ChatFeed, Message } from "react-chat-ui";
 import { Loading, Progress, SetDefault } from "react-loading-ui";
-import { useLocation } from 'react-router-dom';
-// class Test extends Component {
-
-//     constructor(props){
-//         super(props)
-//     }
-//     state = {
-//     screenHeight: 0,
-//     screenWidth: 0,
-//     };
-
-//     chatProperty = {
-//         float: 'right',
-//         height: '100%',
-//         width: `65%`,
-
-//      };
-
-//     handleTabs(buttonName) {
-
-//         let i, tabcontent, tablinks = 0;
-//         tabcontent = document.getElementsByClassName("tabcontent");
-//         for (i = 0; i < tabcontent.length; i++) {
-//             tabcontent[i].style.display = "none";
-//           }
-
-//         tablinks = document.getElementsByClassName("tablinks");
-//         for (i = 0; i < tablinks.length; i++) {
-//         tablinks[i].className = tablinks[i].className.replace(" active", "");
-//         }
-
-//         const chatBox = document.getElementById(buttonName);
-//         chatBox.style.display = "block";
-
-//       }
-
-//       handleWindowSize = (screenHeight, screenWidth) => {
-
-//         this.setState({ screenHeight, screenWidth });
-//       }
-
-//     render() {
-//         // const data = props.data;
-
-//         return (
-//             // main parent div
-//             <div style={{ height: '100%' }}>
-
-//                     <div className="Left_panel">
-//                     <React.Fragment>
-//                     <Button variant="primary" style={{"borderColor":"white"}} >
-//                     <AiOutlinePlus style={{"position":"relative","right":"10px"}}></AiOutlinePlus>
-//                         New Chat</Button>
-//                     <Button variant="primary" style={{"borderColor":"white"}} onClick={() => this.handleTabs("alpha")}>Chat Session 1</Button>
-//                     <Button variant="primary" style={{"borderColor":"white"}} onClick={() => this.handleTabs("beta")}> Chat Session 2</Button>
-//                     <Button variant="primary" style={{"borderColor":"white"}} onClick={() => this.handleTabs("gamma")}> Chat Session 3</Button>
-
-//                     </React.Fragment>
-//                     </div>
-
-//                 <div id="alpha" className="tabcontent" style={this.chatProperty}>
-//                     <h3>Chat session 1</h3>
-//                     {this.props.data}
-
-//                 </div>
-
-//                 <div id="beta" className="tabcontent" style={this.chatProperty}>
-//                     <h3>Chat Session 2</h3>
-//                     <p>Context</p>
-//                 </div>
-
-//                 <div id="gamma" className="tabcontent" style={this.chatProperty}>
-//                     <h3>Chat Session 3</h3>
-//                     <p>Context</p>
-//                 </div>
-
-//             </div>
-//             //main parent div closing
-//         );
-//     }
+import { withRouter } from "react-router-dom";
+import { createContext, useContext } from "react";
+import UserContext from "./Context/UserContext.js";
+// const LocationComponent = props =>{
+//   const location = useLocation();
+//   return <Main location={location}
 // }
 
-class Main extends React.Component {
-
-  constructor(props) {
-
-
-    super(props);
-    this.state = {
-      data: [],
-      message: "",
-      reply: "",
-      updated: "",
-      message_history: [],
-      loading: false,
-      username: "rpi_user",
+function Main() {
+  const location = useLocation();
+  console.log(location.state.username);
+  const [data, setData] = useState([]);
+  const [message_input, setMessage] = useState("");
+  const [reply, setReply] = useState("");
+  const [updated, setUpdated] = useState("");
+  const [messageHistory, setMessageHistory] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState("rpi_user");
   
-      // message_load: 10,
-    };
-    this.inputRef = React.createRef();
-  }
+  const inputRef = useRef(null);
 
-  componentDidMount() {
-    
+  useEffect(() => {
     Loading({
       title: "Loading Previous Messages",
     });
-    this.setState({
-      loading: true,
-    });
+    setLoading(true);
     const params = {
-      username: this.state.username,
+      username: username,
     };
     const res = JSON.stringify(params);
     fetch("/api/get_history", {
@@ -132,121 +48,107 @@ class Main extends React.Component {
     })
       .then((response) => response.json())
       .then((data2) => {
-        this.setState({ data: data2["sorted_msgs"] });
+        
+        
 
-        for (let i = 0; i < this.state.data.length; i++) {
-          this.setState({
-            loading: false,
-          });
-          this.setState((prevState) => ({
-            message_history: prevState.message_history.concat(
-              new Message({
-                id: this.state.data[i]["from"],
-                message: this.state.data[i]["text"],
-              })
-            ),
-          }));
+        // console.log(data2["sorted_msgs"]);
+
+        for (let i = 0; i < data2["sorted_msgs"].length; i++) {
+        
+          setMessageHistory(prevArray => [...prevArray,new Message({
+            id: data2["sorted_msgs"][i]["from"],
+            message:data2["sorted_msgs"][i]["text"],
+          })
+        ]
+          )
+          
+          
         }
-        Loading();
+        setLoading(false);
+
+        Loading()
+      });
+  }, []);
+
+  function handleClick(event) {
+    const message_in = inputRef.current.value
+    setLoading(true);
+    setMessageHistory(prevArray => [...prevArray,new Message({
+      id: 0,
+      message: message_in,
+    })
+  ]
+    )
+    inputRef.current.value=""
+        
+    const params = {
+      username: username,
+      message: message_in,
+    };
+    const res = JSON.stringify(params);
+    
+    fetch("/api/reply", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: res,
+    })
+      .then((response) => response.json())
+      .then((dataRetrived) => {
+        
+        setReply(dataRetrived["reply"]);
+        setLoading(false);
+        setMessageHistory(prevArray => [...prevArray,new Message({
+          id: 1,
+          message: dataRetrived["reply"],
+        })
+      ]
+        )
+        
       });
   }
 
-  handleClick = (event) => {
-    this.setState({ updated: this.inputRef.current.value, loading: true });
-    this.setState(
-      (prevState) => ({
-        message_history: prevState.message_history.concat(
-          new Message({
-            id: 0,
-            message: this.inputRef.current.value,
-          })
-        ),
-      }),
-      () => {
-        const params = {
-          username: this.state.username,
-          message: this.inputRef.current.value,
-        };
-        const res = JSON.stringify(params);
-        this.inputRef.current.value = "";
-        fetch("/api/reply", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            "Access-Control-Allow-Origin": "*",
-          },
-          body: res,
-        })
-          .then((response) => response.json())
-          .then((data_retrived) => {
-            console.log(data_retrived["reply"]);
-            this.setState({ reply: data_retrived["reply"], loading: false });
-            this.setState((prevState) => ({
-              message_history: prevState.message_history.concat(
-                new Message({
-                  id: 1,
-                  message: data_retrived["reply"],
-                })
-              ),
-            }));
-          });
-      }
-    );
-  };
-  handleScroll = (event) => {
-    console.log("scroll");
-}
+  return (
+    <div id="main">
+      <h1>Chat page </h1>
 
-  render() {
-    
-    return (
-      
-      <div id="main">
-        <h1 >Chat page </h1>
-
-        <div id="chat" >
-          <ChatFeed
-            onScroll ={this.handleScroll}
-            // messages={this.state.message_history.slice(
-            //   Math.max(
-            //     this.state.message_history.length - this.state.message_load,
-            //     1
-            //   )
-            // )} // Array: list of message objects
-            messages = {this.state.message_history}
-            isTyping={this.state.is_typing} // Boolean: is the recipient typing
-            hasInputField={false} // Boolean: use our input, or use your own
-            showSenderName // show the name of the user who sent the message
-            bubblesCentered={false} //Boolean should the bubbles be centered in the feed?
-            maxHeight={window.innerHeight * 0.75}
-            bubbleStyles={{
-              text: {
-                fontSize: 16,
-              },
-              chatbubble: {
-                borderRadius: 70,
-                padding: 20,
-              },
-            }}
-          />
-          
-        </div>
-        <div className="input">
-            <input
-              ref={this.inputRef}
-              type="text"
-              id="message"
-              name="message"
-            />
-
-            <button id = "send_msg" onClick={this.handleClick} disabled={this.state.loading}>
-              Send
-            </button>
-          </div>
+      <div id="chat">
+        <ChatFeed
+          // messages={state.message_history.slice(
+          //   Math.max(
+          //     state.message_history.length - state.message_load,
+          //     1
+          //   )
+          // )} // Array: list of message objects
+          messages={messageHistory}
+          isTyping={false} // Boolean: is the recipient typing
+          hasInputField={false} // Boolean: use our input, or use your own
+          showSenderName // show the name of the user who sent the message
+          bubblesCentered={false} //Boolean should the bubbles be centered in the feed?
+          maxHeight={window.innerHeight * 0.75}
+          bubbleStyles={{
+            text: {
+              fontSize: 16,
+            },
+            chatbubble: {
+              borderRadius: 70,
+              padding: 20,
+            },
+          }}
+        />
       </div>
-    );
-  }
+      <div className="input">
+        <input ref={inputRef} type="text" id="message" name="message" />
+
+        <button id="send_msg" onClick={handleClick} disabled={loading}>
+          Send
+        </button>
+      </div>
+    </div>
+  );
 }
 
 export default Main;

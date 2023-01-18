@@ -39,7 +39,7 @@ def check_cred():
     print("goes here")
     data = request.get_json()
     query = {
-      "username" : data["userName"],
+      "username" : data["username"],
       "password" : data["password"]
     }
     collection = get_user_col()
