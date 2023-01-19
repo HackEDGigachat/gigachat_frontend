@@ -5,7 +5,7 @@ import time
 import os
 from serpapi import GoogleSearch
 
-openai.api_key = "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"
+openai.api_key = "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"
 # query the db for any new request 
 # if yes
 # send it to gpt
@@ -42,7 +42,7 @@ def check_google_search(text):
   search = GoogleSearch({
     "q": text, 
     "location": "Edmonton,Alberta,Canada",
-    "api_key": "f33ea78b6d582aa1eb319b3f880f2938cfa038ce5426d5f04ef1a945d051267f"
+    "api_key": "a739b53d0482eebda5c963fc47f456985ddb798b6d94068d87d868c745db4d87"
   })
   result = search.get_dict()
   if "answer_box" in result:

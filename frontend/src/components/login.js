@@ -4,7 +4,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import NavBar from "./navbar_login.js";
 import "./login.css";
-import { Button as ButtonSem, Icon } from 'semantic-ui-react'
+
 
 export default function Login() {
   const navigate = useNavigate();
@@ -15,7 +15,6 @@ export default function Login() {
   const [login_pass, setLogin] = useState(false);
   const inputUsername = useRef(null);
   function handleSubmit(event) {
-    console.log("Fwqfwfqwfqwfwqf")
     const username_in = inputUsername.current.value;
   
     event.preventDefault();
@@ -44,9 +43,9 @@ export default function Login() {
           setUsername(username);
           console.log("Test"+username_in)
           
-          // navigate("/main",{state:{
-          //   username:username_in,
-          // },});
+          navigate("/main",{state:{
+            username:username_in,
+          },});
           
         } else {
           setLogin(true);
@@ -67,7 +66,7 @@ export default function Login() {
       <div className="loginForm">
 
  
-        <Form >
+        <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3" controlId="formBasicuserName">
             <Form.Label style={{ color: "white" }}>Username</Form.Label>
             <Form.Control
@@ -109,12 +108,7 @@ export default function Login() {
           >
             Submit
           </Button>
-          <ButtonSem animated>
-      <ButtonSem.Content visible>Next</ButtonSem.Content>
-      <ButtonSem.Content hidden>
-        <Icon name='arrow right' />
-      </ButtonSem.Content>
-    </ButtonSem>
+          
         </Form>
 
         {login_pass}
