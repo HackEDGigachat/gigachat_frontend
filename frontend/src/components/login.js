@@ -1,13 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
-import React, { Component, useState, useEffect,createContext,useContext,useRef   } from "react";
+import React, { Component, useState, useEffect,useRef   } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import NavBar from "./navbar_login.js";
 import "./login.css";
-import UserContext from "./Context/UserContext.js";
+import { Button as ButtonSem, Icon } from 'semantic-ui-react'
 
 export default function Login() {
-  const userCon = useContext(UserContext);
   const navigate = useNavigate();
   const [username, setUsername] = useState("rpi_user");
   const [user, setUser] = useState(null);
@@ -16,6 +15,7 @@ export default function Login() {
   const [login_pass, setLogin] = useState(false);
   const inputUsername = useRef(null);
   function handleSubmit(event) {
+    console.log("Fwqfwfqwfqwfwqf")
     const username_in = inputUsername.current.value;
   
     event.preventDefault();
@@ -44,9 +44,9 @@ export default function Login() {
           setUsername(username);
           console.log("Test"+username_in)
           
-          navigate("/main",{state:{
-            username:username_in,
-          },});
+          // navigate("/main",{state:{
+          //   username:username_in,
+          // },});
           
         } else {
           setLogin(true);
@@ -67,7 +67,7 @@ export default function Login() {
       <div className="loginForm">
 
  
-        <Form onSubmit={handleSubmit}>
+        <Form >
           <Form.Group className="mb-3" controlId="formBasicuserName">
             <Form.Label style={{ color: "white" }}>Username</Form.Label>
             <Form.Control
@@ -103,13 +103,18 @@ export default function Login() {
             variant="primary"
             type="submit"
             onClick={() => {
-              setUser(username)
-              {console.log(userCon)}
+              handleSubmit()
               // navigate("/test");
             }}
           >
             Submit
           </Button>
+          <ButtonSem animated>
+      <ButtonSem.Content visible>Next</ButtonSem.Content>
+      <ButtonSem.Content hidden>
+        <Icon name='arrow right' />
+      </ButtonSem.Content>
+    </ButtonSem>
         </Form>
 
         {login_pass}

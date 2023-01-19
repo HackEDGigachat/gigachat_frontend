@@ -8,23 +8,18 @@ import { useState, useEffect, useRef } from "react";
 import { ChatFeed, Message } from "react-chat-ui";
 import { Loading, Progress, SetDefault } from "react-loading-ui";
 import { withRouter } from "react-router-dom";
-import { createContext, useContext } from "react";
-import UserContext from "./Context/UserContext.js";
-// const LocationComponent = props =>{
-//   const location = useLocation();
-//   return <Main location={location}
-// }
+
+
 
 function Main() {
   const location = useLocation();
-  console.log(location.state.username);
   const [data, setData] = useState([]);
   const [message_input, setMessage] = useState("");
   const [reply, setReply] = useState("");
   const [updated, setUpdated] = useState("");
   const [messageHistory, setMessageHistory] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [username, setUsername] = useState("rpi_user");
+  const [username, setUsername] = useState(location.state.username);
   
   const inputRef = useRef(null);
 
