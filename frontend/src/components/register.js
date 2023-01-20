@@ -38,7 +38,7 @@ function Register(props) {
               
                 setLogin(false);
                 navigate("/main",{state:{
-                  username:username_in,
+                  username:username,
                 },});
                 
               } else {
