@@ -11,6 +11,30 @@ def updateDictionary(user,collection_msg):
     message["from"] = user
     del message['_id']
   return collection_msg
+@app.route('/api/create_user', methods=['POST'])
+def create_user():
+  print(request)
+
+  if request.method == 'POST':
+    print("goes here")
+    data = request.get_json()
+    name = data["name"]
+    username = data["username"]
+    password = data["password"]
+    query = {
+      "username" : username,
+    }
+    collection = get_user_col()
+    doc = collection.find(query)
+    if(len(list(doc) )==0):
+      collection.insert_one({
+        "name": name,
+        "username" : username,
+        "password" : password,
+      })
+      return jsonify({"valid":True})
+    else:
+      return jsonify({"valid":False})
 
 @app.route('/api/get_history', methods=['POST'])
 def get_history():

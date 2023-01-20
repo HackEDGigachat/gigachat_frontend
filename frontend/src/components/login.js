@@ -1,25 +1,23 @@
 import { Link, useNavigate } from "react-router-dom";
 import React, { Component, useState, useEffect,useRef   } from "react";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import NavBar from "./navbar_login.js";
-import "./login.css";
 
 
-export default function Login() {
+
+
+function Login(props) {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("rpi_user");
+  const [username, setUsername] = useState("");
   const [user, setUser] = useState(null);
   const [password, setPassword] = useState("");
   const [data, setData] = useState([]);
   const [login_pass, setLogin] = useState(false);
   const inputUsername = useRef(null);
   function handleSubmit(event) {
+ 
     const username_in = inputUsername.current.value;
-  
     event.preventDefault();
     const params = {
-      username: username,
+      username: username_in,
       password: password,
     };
     const res = JSON.stringify(params);
@@ -48,6 +46,7 @@ export default function Login() {
           },});
           
         } else {
+          console.log("EWFwefwefewf")
           setLogin(true);
         }
       });
@@ -56,68 +55,31 @@ export default function Login() {
   return (
   
     <div>
-      <div>
-        <NavBar />
-      </div>
-      <video width="100%" height="100%" controls={false} loop={true}>
-        <source src="http://localhost:5000/video" type="video/mp4" />
-      </video>
+      
 
-      <div className="loginForm">
 
- 
-        <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3" controlId="formBasicuserName">
-            <Form.Label style={{ color: "white" }}>Username</Form.Label>
-            <Form.Control
-            ref={inputUsername}
-              type="username"
-              placeholder="Enter username"
-              // value={username}
-              // onChange={(e) => setUsername(e.target.value)}
-            />
-            <Form.Text className="text-muted">
-              We'll never share your username with anyone else.
-            </Form.Text>
-          </Form.Group>
 
-          <Form.Group className="mb-3" controlId="formBasicPassword">
-            <Form.Label style={{ color: "white" }}>Password</Form.Label>
-            <Form.Control
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formBasicCheckbox">
-            <Form.Check
-              type="checkbox"
-              label="To be designed"
-              color="white"
-              className="label-color"
-            />
-          </Form.Group>
-          <Button
-            variant="primary"
-            type="submit"
-            onClick={() => {
-              handleSubmit()
-              // navigate("/test");
-            }}
-          >
-            Submit
-          </Button>
-          
-        </Form>
-
-        {login_pass}
+    
+      <div className="auth-form-container">
+            <h2>Login</h2>
+            <form className="login-form" onSubmit={handleSubmit}>
+                <label htmlFor="email">Username</label>
+                <input  ref={inputUsername} type="username" placeholder="Username"  />
+                <label htmlFor="password">Password</label>
+                <input onChange={(e) => setPassword(e.target.value)} type="password" placeholder="********" id="password" name="password" />
+               <br></br> <button className = "submit" type="submit">Log In</button>
+            </form>
+            <button className="link-btn" onClick={() => props.onFormSwitch('register')}>Don't have an account? Register here.</button>
+            {login_pass}
         {login_pass ? (
           <div id="failed_login">Wrong Username or password</div>
-        ) : null}
+        ) : <br></br>}
+        </div>
+
+        
       </div>
-    </div>
+
   );
         }
 
-// export  default Login;
+export  default Login;
