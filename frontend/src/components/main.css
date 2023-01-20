@@ -22,4 +22,22 @@
   width: 100%;
   justify-content: space-between;
   bottom: 10%;
+  border-radius:1px;
+  border:black,
+
+}
+
+.input input {
+  outline: black;
+  border: 2px solid #4267B2;
+}
+.chatHeader {
+  font-size: 24px;
+  font-weight: bold;
+  color: #4267B2;
+  text-align: center;
+  padding: 10px;
+  margin: 0;
+  border-radius:3px;
+  border:1px solid #426782;
 }

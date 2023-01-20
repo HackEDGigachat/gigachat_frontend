@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Form, Link, useParams, useLocation } from "react-router-dom";
+import { Form, Link, useParams, useLocation, redirect } from "react-router-dom";
 import "./main.css";
 import Button from "react-bootstrap/Button";
 import { AiOutlinePlus } from "react-icons/ai";
@@ -108,7 +108,7 @@ function Main() {
 
   return (
     <div id="main">
-      <h1>Chat page </h1>
+      <h1 class="chatHeader">Chat page </h1>
 
       <div id="chat">
         <ChatFeed
@@ -131,6 +131,7 @@ function Main() {
             chatbubble: {
               borderRadius: 70,
               padding: 20,
+              
             },
           }}
         />

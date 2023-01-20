@@ -15,9 +15,14 @@ function Start(){
       <div className="App">
 
 
-        {/* <div>
+        <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        zIndex: 999}}>
         <NavBar />
-      </div> */}
+      </div>
     
         {
           currentForm === "login" ? <Login onFormSwitch={toggleForm} /> : <Register onFormSwitch={toggleForm} />

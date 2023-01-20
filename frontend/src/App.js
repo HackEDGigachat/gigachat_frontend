@@ -1,6 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
-// import { LoginForm } from './components/loginForm'
+//import { LoginForm } from './components/loginForm'
 import React, { Component, useEffect,useState } from 'react';
 import Main from "./components/main.js"
 import Start from "./components/start.js"
