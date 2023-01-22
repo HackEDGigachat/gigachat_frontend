@@ -9,7 +9,7 @@
   background-color: white;
   position: relative;
   float:right;
-  display:none;
+  
 }
 #message{
   width:75%;
@@ -48,7 +48,7 @@
 .Left_panel {
   display: flex;
   flex-direction: column;
-  width:30%;
+  width:20%;
   height:auto;
   float:left;
   class: clearfix;
