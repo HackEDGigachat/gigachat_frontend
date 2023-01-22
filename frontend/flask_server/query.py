@@ -5,7 +5,7 @@ import time
 import os
 from serpapi import GoogleSearch
 
-openai.api_key = "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"
+openai.api_key = "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"
 # query the db for any new request 
 # if yes
 # send it to gpt

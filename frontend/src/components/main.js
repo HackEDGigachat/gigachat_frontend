@@ -8,7 +8,7 @@ import { useState, useEffect, useRef } from "react";
 import { ChatFeed, Message } from "react-chat-ui";
 import { Loading, Progress, SetDefault } from "react-loading-ui";
 import { withRouter } from "react-router-dom";
-
+import Convo from "./convo.js"
 
 
 function Main() {
@@ -21,6 +21,8 @@ function Main() {
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState(location.state.username);
   
+  const [tab,setTab] = useState('alpha')
+
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -106,11 +108,22 @@ function Main() {
       });
   }
 
+
+
+  
   return (
+
+
+    <div>
+      <h1>{tab}</h1>
+      <Convo handleTabs = {tab => setTab(tab)} />
+      
     <div id="main">
       <h1 class="chatHeader">Chat page </h1>
 
-      <div id="chat">
+
+      
+      <div id="chat" >
         <ChatFeed
           // messages={state.message_history.slice(
           //   Math.max(
@@ -143,6 +156,8 @@ function Main() {
           Send
         </button>
       </div>
+    </div>
+
     </div>
   );
 }
