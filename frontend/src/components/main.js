@@ -12,17 +12,14 @@ import { withRouter } from "react-router-dom";
 
 
 function Main() {
+  const [chatFeedArray,setChatFeedArray] = useState([]); // store [chatHistorymesssages, convo_id]
   const location = useLocation();
-  const [data, setData] = useState([]);
-  const [message_input, setMessage] = useState("");
-  const [reply, setReply] = useState("");
-  const [updated, setUpdated] = useState("");
   const [messageHistory, setMessageHistory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState(location.state.username);
-  
+  const [currentChat, setCurrentChat] = useState(0);
+  // const [curChatText, setCurChatText] = useState([]);
   const inputRef = useRef(null);
-
   useEffect(() => {
     Loading({
       title: "Loading Previous Messages",
@@ -45,40 +42,60 @@ function Main() {
       .then((data2) => {
         
         
+        setChatFeedArray(data2["sorted_msgs"])
+     console.log(data2["sorted_msgs"])
+    //  console.log(data2["sorted_msgs"][0][0],[] + "  fwqfqwfqwfqwf")
+     
+      for (let x = 0; x < data2["sorted_msgs"].length; x++){
+        const newChat=[data2["sorted_msgs"][x][0],[]]
 
-        // console.log(data2["sorted_msgs"]);
+        for (let i = 0; i < data2["sorted_msgs"][x][1].length; i++) {
+          if(data2["sorted_msgs"][x][1][i]["text"] !=""){
+          newChat[1].push(new Message({
+            id: data2["sorted_msgs"][x][1][i]["from"],
+            message:data2["sorted_msgs"][x][1][i]["text"],
+          }));
 
-        for (let i = 0; i < data2["sorted_msgs"].length; i++) {
+          if(i === data2["sorted_msgs"][x][1].length-1) {
+
+            console.log(newChat+" ion loop")
+              setMessageHistory(prevArray => [...prevArray,newChat])
+              console.log(messageHistory+" hist1")
+          }
+        }}
+      }
+    
+      console.log(messageHistory+" hist")
+      
         
-          setMessageHistory(prevArray => [...prevArray,new Message({
-            id: data2["sorted_msgs"][i]["from"],
-            message:data2["sorted_msgs"][i]["text"],
-          })
-        ]
-          )
-          
-          
-        }
         setLoading(false);
 
         Loading()
+        console.log(chatFeedArray )
       });
   }, []);
 
   function handleClick(event) {
+    
     const message_in = inputRef.current.value
     setLoading(true);
-    setMessageHistory(prevArray => [...prevArray,new Message({
-      id: 0,
-      message: message_in,
-    })
-  ]
-    )
+    
+    
+
+    setMessageHistory(prevMessageHistory => {
+      let newHistory = [...prevMessageHistory];
+      newHistory[currentChat][1].push(new Message({ id: 0, message: message_in }));
+      return newHistory;
+    });
+    
+
+    
     inputRef.current.value=""
-        
+    console.log("current chat id "+chatFeedArray[currentChat][0])
     const params = {
       username: username,
       message: message_in,
+      conversation_id: chatFeedArray[currentChat][0],
     };
     const res = JSON.stringify(params);
     
@@ -93,17 +110,26 @@ function Main() {
     })
       .then((response) => response.json())
       .then((dataRetrived) => {
+        console.log(dataRetrived["reply"]+" dfwqfqwfqwfqwf")
         
-        setReply(dataRetrived["reply"]);
+
+         
         setLoading(false);
-        setMessageHistory(prevArray => [...prevArray,new Message({
-          id: 1,
-          message: dataRetrived["reply"],
-        })
-      ]
-        )
+        setMessageHistory(prevMessageHistory => {
+          let newHistory = [...prevMessageHistory];
+          newHistory[currentChat][1].push(new Message({ id: 1, message: dataRetrived["reply"] }));
+          return newHistory;
+        });
+
+        console.log(messageHistory)
+
         
       });
+      
+  }
+  function handleTest(event){
+    // setCurrentChat(1);
+    console.log(messageHistory);
   }
 
   return (
@@ -111,14 +137,9 @@ function Main() {
       <h1>Chat page </h1>
 
       <div id="chat">
-        <ChatFeed
-          // messages={state.message_history.slice(
-          //   Math.max(
-          //     state.message_history.length - state.message_load,
-          //     1
-          //   )
-          // )} // Array: list of message objects
-          messages={messageHistory}
+       
+      <ChatFeed
+          messages={messageHistory.length >0 ?  messageHistory[currentChat][1] :[]}
           isTyping={false} // Boolean: is the recipient typing
           hasInputField={false} // Boolean: use our input, or use your own
           showSenderName // show the name of the user who sent the message
@@ -134,13 +155,16 @@ function Main() {
             },
           }}
         />
+        
       </div>
       <div className="input">
         <input ref={inputRef} type="text" id="message" name="message" />
 
         <button id="send_msg" onClick={handleClick} disabled={loading}>
+        
           Send
         </button>
+        <button id="test" onClick={handleTest} disabled={loading}>test</button>
       </div>
     </div>
   );
