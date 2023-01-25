@@ -1,26 +1,26 @@
 import React, { Component } from "react";
-import { Form, Link, useParams, useLocation, redirect } from "react-router-dom";
+
 import "./main.css";
 import Button from "react-bootstrap/Button";
 import { AiOutlinePlus } from "react-icons/ai";
 import WindowSize from "./windowSize";
 import { useState, useEffect, useRef } from "react";
 import { ChatFeed, Message } from "react-chat-ui";
-import { Loading, Progress, SetDefault } from "react-loading-ui";
+
 import { withRouter } from "react-router-dom";
 
 
 
 function ChatBox(props) {
   const {active = false} = props;
-  const location = useLocation();
-  const [data, setData] = useState([]);
-  const [message_input, setMessage] = useState("");
-  const [reply, setReply] = useState("");
-  const [updated, setUpdated] = useState("");
-  const [messageHistory, setMessageHistory] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [username, setUsername] = useState(location.state.username);
+  const [dummy,setDummy]= useState()
+  const [message_history,setMessageHistory] = useState(props.contents)
+
+
+
+
+
 
 
 
@@ -29,62 +29,30 @@ function ChatBox(props) {
     
   const inputRef = useRef(null);
 
-  useEffect(() => {
-    Loading({
-      title: "Loading Previous Messages",
-    });
-    setLoading(true);
-    const params = {
-      username: username,
-    };
-    const res = JSON.stringify(params);
-    fetch("/api/get_history", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: res,
-    })
-      .then((response) => response.json())
-      .then((data2) => {
-        
-        
-
-        // console.log(data2["sorted_msgs"]);
-
-        for (let i = 0; i < data2["sorted_msgs"].length; i++) {
-        
-          setMessageHistory(prevArray => [...prevArray,new Message({
-            id: data2["sorted_msgs"][i]["from"],
-            message:data2["sorted_msgs"][i]["text"],
-          })
-        ]
-          )
-          
-          
-        }
-        setLoading(false);
-
-        Loading()
-      });
-  }, []);
 
   function handleClick(event) {
     const message_in = inputRef.current.value
     setLoading(true);
-    setMessageHistory(prevArray => [...prevArray,new Message({
-      id: 0,
-      message: message_in,
-    })
-  ]
-    )
+
+    // props.add_msg_func(new Message({
+    //   id: 0,
+    //   message: message_in,
+    // }),props.id)
+
+    setMessageHistory(prevMessageHistory => {
+          
+      let newHistory = [...prevMessageHistory];
+      
+      newHistory[0][1].push(new Message({ id: 0, message:message_in }));
+      return newHistory;
+    });
+    console.log("my input " + message_in)
     inputRef.current.value=""
         
     const params = {
-      username: username,
+      username: props.username,
       message: message_in,
+      conversation_id: props.conversation_id,
     };
     const res = JSON.stringify(params);
     
@@ -100,14 +68,21 @@ function ChatBox(props) {
       .then((response) => response.json())
       .then((dataRetrived) => {
         
-        setReply(dataRetrived["reply"]);
+        console.log(dataRetrived)
         setLoading(false);
-        setMessageHistory(prevArray => [...prevArray,new Message({
-          id: 1,
-          message: dataRetrived["reply"],
-        })
-      ]
-        )
+
+        console.log(props.contents)
+        console.log("---")
+        // setDummy(dataRetrived["reply"])
+        setMessageHistory(prevMessageHistory => {
+          
+          let newHistory = [...prevMessageHistory];
+          
+          newHistory[0][1].push(new Message({ id: 1, message: dataRetrived["reply"] }));
+          return newHistory;
+        });
+      
+
         
       });
   }
@@ -124,7 +99,12 @@ function ChatBox(props) {
     chatBox.style.display = "block";
   }
 
-
+  function handleTest(){
+    console.log("use")
+    console.log(message_history);
+    console.log("props");
+    console.log(props.contents[0][1])
+  }
 
 
 
@@ -140,13 +120,8 @@ function ChatBox(props) {
     <div id="chat" >
     <h1 className="chatHeader">{props.id === 1 ? "Chat page" : `Chat page ${props.id}`}</h1>
       <ChatFeed
-        // messages={state.message_history.slice(
-        //   Math.max(
-        //     state.message_history.length - state.message_load,
-        //     1
-        //   )
-        // )} // Array: list of message objects
-        messages={messageHistory}
+
+        messages={props.contents[0][1]}
         isTyping={false} // Boolean: is the recipient typing
         hasInputField={false} // Boolean: use our input, or use your own
         showSenderName // show the name of the user who sent the message
@@ -171,6 +146,10 @@ function ChatBox(props) {
 
       <button id="send_msg" onClick={handleClick} disabled={loading}>
         Send
+      </button>
+      
+      <button id="test" onClick={handleTest} >
+        Test
       </button>
     </div>
   </div>
