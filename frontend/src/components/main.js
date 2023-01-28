@@ -16,10 +16,10 @@ function Main(props) {
   const location = useLocation();
   const [username, setUsername] = useState(location.state.username);
   const [messageHistory, setMessageHistory] = useState([]);
-  const [chatFeedArray, setChatFeedArray] = useState([]); // store [convo_id,chatHistorymesssages]
   // Initializes # of chat sessions to 1, , see function handleNewChat
   // will be changed later with stored user info
-  const [chats, setChats] = useState([{ id: 0, name: "0" }]);
+  // const [chats, setChats] = useState([{ id: 0, name: "0" }]);
+  const [chats, setChats] = useState([]);
   // allows user to match button with conversation content
   const add_message = (newMessage, id) => {
     setMessageHistory((prevMessageHistory) => {
@@ -56,9 +56,9 @@ function Main(props) {
     })
       .then((response) => response.json())
       .then((data2) => {
-        console.log(data2)
-
+        console.log(data2["sorted_msgs"])
         for (let x = 0; x < data2["sorted_msgs"].length; x++) {
+          
           const newChat = [data2["sorted_msgs"][x][0], []];
 
           for (let i = 0; i < data2["sorted_msgs"][x][1].length; i++) {
@@ -70,35 +70,23 @@ function Main(props) {
                 })
               );
 
-              if (i === data2["sorted_msgs"][x][1].length - 1) {
-                setMessageHistory((prevArray) => [...prevArray, newChat]);
-                if(x===0){
-                  setChatPages([<ChatBox id={"0"} key={"0"}
-                  conversation_id={newChat[0]}
-                  contents={[newChat]}
-                  add_msg_func={add_message}
-                  username={username}
-                  setMessageHistory={setMessageHistory} />])
-                }else{
-                  setChatPages([
-                    ...chatPages,
-                    <ChatBox
-                      id={x.toString()}
-                      key={x.toString()}
-                      conversation_id={messageHistory[x][0]}
-                      contents={messageHistory[x][1]}
-                      add_msg_func={add_message}
-                      username={username}
-                      setMessageHistory={setMessageHistory}
-                    />,
-                  ]);
-                }
-              }
+              
             }
           }
-         
+          
+          chats.push( { id: x.toString(), name: x.toString()})
+          messageHistory.push(newChat)
+          chatPages.push(<ChatBox
+            id={x.toString()}
+            key={x.toString()}
+            conversation_id={newChat[0]}
+            contents={[newChat]}
+            add_msg_func={add_message}
+            username={username}
+            setMessageHistory={setMessageHistory}
+          />,)
+          
         }
-
 
         setLoading(false);
 
@@ -106,25 +94,46 @@ function Main(props) {
       });
   }, []);
 
+  async function handleNewChat() {
+    const newChat = { id: chats.length.toString(), name: `${chats.length}` };
+    // setMessageHistory((prevArray) => [...prevArray, [[],[]]]);
+    try {
+      const response = await fetch("/api/new_conversation", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+      const data = await response.json();
 
-  const handleNewChat = () => {
-    const newChat = { id: chats.length, name: `${chats.length}` };
+      // setMessageHistory((prevArray) => {
+      //   const newArray = [...prevArray];
+      //   newArray.push([[data], []]);
+
+      //   return newArray;
+      // });
+      messageHistory.push([[data["conversation_id"]], []])
+    } catch (error) {
+      console.error(error);
+    }
 
     setChats([...chats, newChat]);
-    console.log(newChat.id === "1");
+    console.log(messageHistory[chats.length])
     setChatPages([
       ...chatPages,
       <ChatBox
         id={newChat.id}
         key={newChat.id}
-        conversation_id={messageHistory[0][0]}
-        contents={messageHistory}
+        conversation_id={messageHistory[messageHistory.length - 1][0]}
+        contents={[messageHistory[chats.length]]}
         add_msg_func={add_message}
         username={username}
         setMessageHistory={setMessageHistory}
       />,
     ]);
-  };
+  }
 
   const chatProperty = {
     float: "right",
@@ -148,14 +157,18 @@ function Main(props) {
     setScreenHeight(screenHeight);
     setScreenWidth(screenWidth);
   };
-function handleTest(){
- 
-}
+  function handleTest() {
+    console.log([messageHistory[0][2][1]])
+    console.log(Array.isArray([messageHistory[0][2]][1]))
+    
+  }
+
   return (
     <div>
-      {/* <button id="test" onClick={handleTest} >
+      <button id="test" onClick={handleTest}>
         fwafwafwafawfwfasfasf
-      </button> */}
+      </button>
+
       <div style={{ height: "100%" }}>
         <div className="Left_panel">
           <React.Fragment>
@@ -189,10 +202,7 @@ function handleTest(){
           }
         })}
       </div>
-      
     </div>
-
-  
   );
 }
 

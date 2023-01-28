@@ -34,11 +34,6 @@ function ChatBox(props) {
     const message_in = inputRef.current.value
     setLoading(true);
 
-    // props.add_msg_func(new Message({
-    //   id: 0,
-    //   message: message_in,
-    // }),props.id)
-
     setMessageHistory(prevMessageHistory => {
           
       let newHistory = [...prevMessageHistory];
@@ -119,8 +114,31 @@ function ChatBox(props) {
     
     <div id="chat" >
     <h1 className="chatHeader">{props.id === 1 ? "Chat page" : `Chat page ${props.id}`}</h1>
+    {/* gfwegewgew
+    {Array.isArray(props.contents[0][1]) ? <h1>fefefef</h1> :
+    <ChatFeed
+
+messages={props.contents[0][1]}
+
+isTyping={false} // Boolean: is the recipient typing
+hasInputField={false} // Boolean: use our input, or use your own
+showSenderName // show the name of the user who sent the message
+bubblesCentered={false} //Boolean should the bubbles be centered in the feed?
+maxHeight={window.innerHeight * 0.75}
+bubbleStyles={{
+  text: {
+    fontSize: 16,
+  },
+  chatbubble: {
+    borderRadius: 70,
+    padding: 20,
+    
+  },
+}}
+/> } */}
       <ChatFeed
 
+        // messages={Array.isArray(props.contents[0][1]) ? props.contents[0][1].length : []}
         messages={props.contents[0][1]}
         isTyping={false} // Boolean: is the recipient typing
         hasInputField={false} // Boolean: use our input, or use your own
