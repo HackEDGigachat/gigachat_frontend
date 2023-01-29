@@ -97,6 +97,9 @@ function Main(props) {
   async function handleNewChat() {
     const newChat = { id: chats.length.toString(), name: `${chats.length}` };
     // setMessageHistory((prevArray) => [...prevArray, [[],[]]]);
+    Loading({
+      title: "Creating new chat ID!",
+    });
     try {
       const response = await fetch("/api/new_conversation", {
         method: "POST",
@@ -114,7 +117,10 @@ function Main(props) {
 
       //   return newArray;
       // });
-      messageHistory.push([[data["conversation_id"]], []])
+      console.log("Fewfewf")
+      console.log([data["conversation_id"]])
+      messageHistory.push([data["conversation_id"], []])
+      Loading()
     } catch (error) {
       console.error(error);
     }
@@ -165,9 +171,9 @@ function Main(props) {
 
   return (
     <div>
-      <button id="test" onClick={handleTest}>
+      {/* <button id="test" onClick={handleTest}>
         fwafwafwafawfwfasfasf
-      </button>
+      </button> */}
 
       <div style={{ height: "100%" }}>
         <div className="Left_panel">
