@@ -95,12 +95,17 @@ function ChatBox(props) {
   }
 
   function handleTest(){
-    console.log("use")
-    console.log(message_history);
-    console.log("props");
+ 
     console.log(props.contents[0][1])
+    console.log(props.contents[0][1]["messsage"])
+    console.log(props.contents[0][1].length===0)
   }
-
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      inputRef.current.blur();
+      document.getElementById("send_msg").click();
+    }
+  };
 
 
   return props.active ? (
@@ -114,32 +119,10 @@ function ChatBox(props) {
     
     <div id="chat" >
     <h1 className="chatHeader">{props.id === 1 ? "Chat page" : `Chat page ${props.id}`}</h1>
-    {/* gfwegewgew
-    {Array.isArray(props.contents[0][1]) ? <h1>fefefef</h1> :
-    <ChatFeed
-
-messages={props.contents[0][1]}
-
-isTyping={false} // Boolean: is the recipient typing
-hasInputField={false} // Boolean: use our input, or use your own
-showSenderName // show the name of the user who sent the message
-bubblesCentered={false} //Boolean should the bubbles be centered in the feed?
-maxHeight={window.innerHeight * 0.75}
-bubbleStyles={{
-  text: {
-    fontSize: 16,
-  },
-  chatbubble: {
-    borderRadius: 70,
-    padding: 20,
-    
-  },
-}}
-/> } */}
       <ChatFeed
 
         // messages={Array.isArray(props.contents[0][1]) ? props.contents[0][1].length : []}
-        messages={props.contents[0][1]}
+        messages={props.contents[0][1].length===0? [] : props.contents[0][1]}
         isTyping={false} // Boolean: is the recipient typing
         hasInputField={false} // Boolean: use our input, or use your own
         showSenderName // show the name of the user who sent the message
@@ -159,16 +142,16 @@ bubbleStyles={{
     </div>
 
     
-    <div className="input">
-      <input ref={inputRef} type="text" id="message" name="message" />
+    <div >
+      <input className="input_msg" ref={inputRef} type="text"  name="message" onKeyDown={handleKeyDown}/>
 
       <button id="send_msg" onClick={handleClick} disabled={loading}>
         Send
       </button>
       
-      <button id="test" onClick={handleTest} >
+      {/* <button id="test" onClick={handleTest} >
         Test
-      </button>
+      </button> */}
     </div>
   </div>
 

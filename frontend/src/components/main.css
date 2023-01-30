@@ -15,7 +15,28 @@
   width:75%;
   padding-right: 10%;
 }
-.input button {
+.input_msg {
+  position: absolute;
+  margin: 0.5rem 0;
+  padding: 1rem;
+  bottom: 0;
+  border-radius: 10px;
+  left: 0;
+  width: calc(100% - 75px);
+  
+}
+
+#send_msg {
+  position: absolute;
+  margin: 0.5rem 0;
+  padding: 1rem;
+  bottom: 0;
+  border-radius: 10px;
+  right: 0;
+  width: 75px;
+}
+
+/* .input button {
   margin-left: 5px;
 }
 .input{
@@ -25,7 +46,7 @@
   width: 100%;
   justify-content: space-between;
   bottom: 10%;
-  border-radius:1px;
+  border-radius:100px;
   border:black,
 
 }
@@ -33,7 +54,7 @@
 .input input {
   outline: black;
   border: 2px solid #4267B2;
-}
+} */
 .chatHeader {
   font-size: 24px;
   font-weight: bold;

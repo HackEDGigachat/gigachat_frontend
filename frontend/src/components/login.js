@@ -64,9 +64,9 @@ function Login(props) {
             <h2>Login</h2>
             <form className="login-form" onSubmit={handleSubmit}>
                 <label htmlFor="email">Username</label>
-                <input  ref={inputUsername} type="username" placeholder="Username"  />
+                <input className="input_login" ref={inputUsername} type="username" placeholder="Username"  />
                 <label htmlFor="password">Password</label>
-                <input onChange={(e) => setPassword(e.target.value)} type="password" placeholder="********" id="password" name="password" />
+                <input className="input_login" onChange={(e) => setPassword(e.target.value)} type="password" placeholder="********" id="password" name="password" />
                <br></br> <button className = "submit" type="submit">Log In</button>
             </form>
             <button className="link-btn" onClick={() => props.onFormSwitch('register')}>Don't have an account? Register here.</button>
