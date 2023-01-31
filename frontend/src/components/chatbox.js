@@ -17,7 +17,9 @@ function ChatBox(props) {
   const [dummy,setDummy]= useState()
   const [message_history,setMessageHistory] = useState(props.contents)
 
-
+  const isImageUrl = url => {
+    return /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|jpeg|gif|png)/.test(url);
+  };
 
 
 
@@ -72,8 +74,9 @@ function ChatBox(props) {
         setMessageHistory(prevMessageHistory => {
           
           let newHistory = [...prevMessageHistory];
+
+          newHistory[0][1].push(new Message({ id: 1, message: isImageUrl(dataRetrived["reply"])? <img className="image_feed" src={dataRetrived["reply"]} alt="Image" />:dataRetrived["reply"], }));
           
-          newHistory[0][1].push(new Message({ id: 1, message: dataRetrived["reply"] }));
           return newHistory;
         });
       

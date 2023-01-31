@@ -29,13 +29,10 @@ function Main(props) {
     });
   };
   const [chatPages, setChatPages] = useState([]);
+  const isImageUrl = url => {
+    return /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|jpeg|gif|png)/.test(url);
+  };
 
-  // const [chats, setChats] = useState([
-
-  // ]);
-  // const [chatPages, setChatPages] = useState([
-
-  // ]);
   useEffect(() => {
     Loading({
       title: "Loading Previous Messages",
@@ -63,10 +60,12 @@ function Main(props) {
 
           for (let i = 0; i < data2["sorted_msgs"][x][1].length; i++) {
             if (data2["sorted_msgs"][x][1][i]["text"] !== "") {
+              const body =""
+      
               newChat[1].push(
                 new Message({
                   id: data2["sorted_msgs"][x][1][i]["from"],
-                  message: data2["sorted_msgs"][x][1][i]["text"],
+                  message: isImageUrl(data2["sorted_msgs"][x][1][i]["text"])? <img className="image_feed" src={data2["sorted_msgs"][x][1][i]["text"]} alt="Image" />:data2["sorted_msgs"][x][1][i]["text"],
                 })
               );
 
@@ -111,12 +110,7 @@ function Main(props) {
       });
       const data = await response.json();
 
-      // setMessageHistory((prevArray) => {
-      //   const newArray = [...prevArray];
-      //   newArray.push([[data], []]);
-
-      //   return newArray;
-      // });
+    
       console.log("Fewfewf")
       console.log([data["conversation_id"]])
       messageHistory.push([data["conversation_id"], []])
