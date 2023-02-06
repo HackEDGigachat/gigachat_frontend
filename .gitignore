@@ -1,4 +1,3 @@
 
-frontend/flask_server/query.py 
-#ask zi for personal api key or generate one urself will work as well
-#everytime someone else uses the same api key, key will be forced to be regen
+
+/node_modules

@@ -8,29 +8,15 @@ import { useState, useEffect, useRef } from "react";
 import { ChatFeed, Message } from "react-chat-ui";
 
 import { withRouter } from "react-router-dom";
-
-
+import {newsGrid,isImageUrl} from "./main.js"
 
 function ChatBox(props) {
   const {active = false} = props;
   const [loading, setLoading] = useState(false);
   const [dummy,setDummy]= useState()
   const [message_history,setMessageHistory] = useState(props.contents)
-
-  const isImageUrl = url => {
-    return /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|jpeg|gif|png)/.test(url);
-  };
-
-
-
-
-
-
-
-
     
   const inputRef = useRef(null);
-
 
   function handleClick(event) {
     const message_in = inputRef.current.value
@@ -65,20 +51,34 @@ function ChatBox(props) {
       .then((response) => response.json())
       .then((dataRetrived) => {
         
-        console.log(dataRetrived)
+      
         setLoading(false);
-
-        console.log(props.contents)
-        console.log("---")
-        // setDummy(dataRetrived["reply"])
-        setMessageHistory(prevMessageHistory => {
+        
+        if(dataRetrived['type']==="news"){
+          console.log(dataRetrived["reply"])
+          setMessageHistory(prevMessageHistory => {
           
-          let newHistory = [...prevMessageHistory];
-
-          newHistory[0][1].push(new Message({ id: 1, message: isImageUrl(dataRetrived["reply"])? <img className="image_feed" src={dataRetrived["reply"]} alt="Image" />:dataRetrived["reply"], }));
+            let newHistory = [...prevMessageHistory];
+          newHistory[0][1].push(new Message({ id: 1, message: newsGrid(dataRetrived["reply"])
           
+            
+          
+          }));
           return newHistory;
         });
+        
+        }else{
+          setMessageHistory(prevMessageHistory => {
+          
+            let newHistory = [...prevMessageHistory];
+  
+            newHistory[0][1].push(new Message({ id: 1, message: isImageUrl(dataRetrived["reply"])? <img className="image_feed" src={dataRetrived["reply"]} alt="Image" />:dataRetrived["reply"], }));
+            
+            return newHistory;
+          });
+        }
+        
+        
       
 
         
@@ -97,12 +97,7 @@ function ChatBox(props) {
     chatBox.style.display = "block";
   }
 
-  function handleTest(){
- 
-    console.log(props.contents[0][1])
-    console.log(props.contents[0][1]["messsage"])
-    console.log(props.contents[0][1].length===0)
-  }
+
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       inputRef.current.blur();
@@ -110,7 +105,10 @@ function ChatBox(props) {
     }
   };
 
-
+  function test(event) {
+    // console.log(news)
+  }
+ 
   return props.active ? (
 
 
@@ -119,6 +117,7 @@ function ChatBox(props) {
 
       
             <div id="main">
+            
     
     <div id="chat" >
     <h1 className="chatHeader">{props.id === 1 ? "Chat page" : `Chat page ${props.id}`}</h1>
@@ -143,7 +142,7 @@ function ChatBox(props) {
         }}
       />
     </div>
-
+    
     
     <div >
       <input className="input_msg" ref={inputRef} type="text"  name="message" onKeyDown={handleKeyDown}/>
@@ -151,6 +150,7 @@ function ChatBox(props) {
       <button id="send_msg" onClick={handleClick} disabled={loading}>
         Send
       </button>
+      
       
       {/* <button id="test" onClick={handleTest} >
         Test

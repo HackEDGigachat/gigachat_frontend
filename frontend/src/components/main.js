@@ -9,7 +9,27 @@ import ChatBox from "./chatbox";
 import { Loading, Progress, SetDefault } from "react-loading-ui";
 import { useParams, useLocation, redirect } from "react-router-dom";
 import { Message } from "react-chat-ui";
+export function clickNews(url){
+  window.open(url, '_blank');
+
+}
+ 
+export function newsGrid(news){
+    return(
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gridGap: '10px' }}>
+            {news.map((item, index) => (
+              <div onClick={() => clickNews(item.url)}>
+              <img key={index} src={item.urlToImage} alt="" style={{ width: '100px',height:'100px', height: 'auto' }} />
+              <div>{item.title.length > 50? item.title.substring(0,50)+"...":item.title}</div>
+              </div>
+            ))}
+          </div>)
+  }
+export const isImageUrl = url => {
+    return /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|jpeg|gif|png)/.test(url);
+  };
 function Main(props) {
+
   const [screenHeight, setScreenHeight] = useState(0);
   const [screenWidth, setScreenWidth] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -29,9 +49,7 @@ function Main(props) {
     });
   };
   const [chatPages, setChatPages] = useState([]);
-  const isImageUrl = url => {
-    return /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|jpeg|gif|png)/.test(url);
-  };
+
 
   useEffect(() => {
     Loading({
@@ -53,21 +71,32 @@ function Main(props) {
     })
       .then((response) => response.json())
       .then((data2) => {
-        console.log(data2["sorted_msgs"])
+       
         for (let x = 0; x < data2["sorted_msgs"].length; x++) {
           
           const newChat = [data2["sorted_msgs"][x][0], []];
 
           for (let i = 0; i < data2["sorted_msgs"][x][1].length; i++) {
-            if (data2["sorted_msgs"][x][1][i]["text"] !== "") {
+
+            if (data2["sorted_msgs"][x][1][i]["text"] !== "" && data2["sorted_msgs"][x][1][i].length!=0) {
               const body =""
-      
+
+              console.log(data2["sorted_msgs"][x][1][i])
+              if(data2["sorted_msgs"][x][1][i]["response_type"] == "news"){
+                newChat[1].push(
+                  new Message({
+                    id: data2["sorted_msgs"][x][1][i]["from"],
+                    message: newsGrid(data2["sorted_msgs"][x][1][i]["text"])
+                  })
+                );
+              }else{
               newChat[1].push(
                 new Message({
                   id: data2["sorted_msgs"][x][1][i]["from"],
                   message: isImageUrl(data2["sorted_msgs"][x][1][i]["text"])? <img className="image_feed" src={data2["sorted_msgs"][x][1][i]["text"]} alt="Image" />:data2["sorted_msgs"][x][1][i]["text"],
                 })
               );
+              }
 
               
             }
@@ -120,7 +149,7 @@ function Main(props) {
     }
 
     setChats([...chats, newChat]);
-    console.log(messageHistory[chats.length])
+
     setChatPages([
       ...chatPages,
       <ChatBox
