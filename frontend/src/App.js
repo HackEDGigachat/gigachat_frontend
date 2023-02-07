@@ -13,7 +13,7 @@ function App() {
     <>
 
       <div >
-      {/* <ParticleBackground/> */}
+      <ParticleBackground/>
         
         <Router>
           <Routes>
